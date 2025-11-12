@@ -33,7 +33,7 @@ export default function MealCard({ food, onEdit, onDelete }: MealCardProps) {
   }
   
   const foodImage = isValidUrl(food.image) ? food.image : ''
-  const restaurantLogo = isValidUrl(food.restaurant?.logo) ? food.restaurant.logo : ''
+  const restaurantLogo = food.restaurant && isValidUrl(food.restaurant.logo) ? food.restaurant.logo : ''
   
   // Clamp rating between 1 and 5
   const getValidRating = (rating: number | string | undefined): number => {

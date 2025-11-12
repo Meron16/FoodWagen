@@ -26,16 +26,17 @@ export const getFoods = async (searchParam?: string): Promise<Food[]> => {
       // Get restaurant name
       const restaurantName = item.restaurant_name || item.restaurantName || ''
       
-      // Get restaurant status - handle both formats
-      let restaurantStatus = item.restaurant_status || item.status || 'Closed'
-      if (restaurantStatus === 'Open') {
+      // Get restaurant status - handle both formats and ensure correct type
+      let restaurantStatus: 'Open Now' | 'Closed' = 'Closed'
+      const statusValue = item.restaurant_status || item.status || 'Closed'
+      if (statusValue === 'Open' || statusValue === 'Open Now') {
         restaurantStatus = 'Open Now'
-      } else if (restaurantStatus !== 'Open Now') {
+      } else {
         restaurantStatus = 'Closed'
       }
       
       // Build restaurant object
-      const restaurant = restaurantLogo || restaurantName ? {
+      const restaurant: { name: string; logo: string; status: 'Open Now' | 'Closed' } | undefined = restaurantLogo || restaurantName ? {
         name: restaurantName,
         logo: restaurantLogo,
         status: restaurantStatus
@@ -116,13 +117,26 @@ export const createFood = async (data: FoodFormData): Promise<Food> => {
     }
     
     const response = await apiClient.post<FoodApiResponse>('/Food', payload)
+    
+    // Handle restaurant status type
+    let restaurantStatus: 'Open Now' | 'Closed' = 'Closed'
+    if (response.data.restaurant?.status) {
+      restaurantStatus = response.data.restaurant.status === 'Open Now' ? 'Open Now' : 'Closed'
+    }
+    
+    const restaurant = response.data.restaurant ? {
+      name: response.data.restaurant.name || '',
+      logo: response.data.restaurant.logo || '',
+      status: restaurantStatus
+    } : undefined
+    
     return {
-      id: response.data.id,
-      name: response.data.name,
-      rating: response.data.rating,
-      image: response.data.image,
-      restaurant: response.data.restaurant,
-      price: response.data.price,
+      id: response.data.id || '',
+      name: response.data.name || response.data.food_name || '',
+      rating: typeof response.data.rating === 'number' ? response.data.rating : (typeof response.data.food_rating === 'number' ? response.data.food_rating : 0),
+      image: response.data.image || response.data.food_image || '',
+      restaurant: restaurant,
+      price: response.data.price || response.data.Price || '$0.00',
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -146,13 +160,26 @@ export const updateFood = async (id: string, data: FoodFormData): Promise<Food> 
     }
     
     const response = await apiClient.put<FoodApiResponse>(`/Food/${id}`, payload)
+    
+    // Handle restaurant status type
+    let restaurantStatus: 'Open Now' | 'Closed' = 'Closed'
+    if (response.data.restaurant?.status) {
+      restaurantStatus = response.data.restaurant.status === 'Open Now' ? 'Open Now' : 'Closed'
+    }
+    
+    const restaurant = response.data.restaurant ? {
+      name: response.data.restaurant.name || '',
+      logo: response.data.restaurant.logo || '',
+      status: restaurantStatus
+    } : undefined
+    
     return {
-      id: response.data.id,
-      name: response.data.name,
-      rating: response.data.rating,
-      image: response.data.image,
-      restaurant: response.data.restaurant,
-      price: response.data.price,
+      id: response.data.id || '',
+      name: response.data.name || response.data.food_name || '',
+      rating: typeof response.data.rating === 'number' ? response.data.rating : (typeof response.data.food_rating === 'number' ? response.data.food_rating : 0),
+      image: response.data.image || response.data.food_image || '',
+      restaurant: restaurant,
+      price: response.data.price || response.data.Price || '$0.00',
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
