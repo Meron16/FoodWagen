@@ -35,12 +35,12 @@ export default function Hero({ onSearch }: HeroProps) {
         <SearchCard onSearch={onSearch} />
       </div>
       
-      <div className="food-hero-image absolute bottom-0 right-[120px] h-[300px] w-auto z-0" style={{filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15))'}}>
+      <div className="food-hero-image absolute bottom-0 right-[120px] h-[400px] w-auto z-0" style={{filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15))'}}>
         <Image
           src="/hero-food.png"
           alt="Food"
-          width={450}
-          height={450}
+          width={550}
+          height={550}
           className="h-full w-auto object-contain"
           unoptimized
         />

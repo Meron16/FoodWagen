@@ -35,10 +35,16 @@ export default function FeaturedMeals({ searchQuery, onRefresh }: FeaturedMealsP
 
   useEffect(() => {
     fetchFoods()
+    // Reset display count when search query changes
+    setDisplayCount(8)
   }, [searchQuery])
 
   const handleLoadMore = () => {
-    setDisplayCount(prev => prev + 8)
+    setDisplayCount(prev => {
+      const newCount = prev + 8
+      // Don't exceed the total number of foods
+      return Math.min(newCount, foods.length)
+    })
   }
 
   const handleEdit = (food: Food) => {
@@ -120,13 +126,26 @@ export default function FeaturedMeals({ searchQuery, onRefresh }: FeaturedMealsP
           ))}
         </div>
 
-        {hasMore && (
-          <div className="flex justify-center mt-16">
+        {displayedFoods.length > 0 && (
+          <div className="flex justify-center items-center mt-16 mb-8 w-full" style={{ position: 'relative', zIndex: 100 }}>
             <button
-              onClick={handleLoadMore}
-              className="food-load-more-btn px-12 py-[21px] rounded-[14px] bg-food-gradient-button text-white font-bold text-lg leading-[100%] shadow-food-button hover:opacity-90 transition-opacity"
+              onClick={hasMore ? handleLoadMore : undefined}
+              type="button"
+              className="food-learn-more-btn px-12 py-[21px] rounded-[14px] text-white font-bold text-lg leading-[100%] hover:opacity-90 transition-opacity whitespace-nowrap"
+              style={{
+                background: 'linear-gradient(97.86deg, #FFBA26 -8.95%, #FF9A0E 109.24%)',
+                boxShadow: '0px 20px 40px 0px #FFAE004A, 0px 5px 10px 0px #FFAE0042',
+                position: 'relative',
+                zIndex: 100,
+                pointerEvents: 'auto',
+                filter: 'none',
+                opacity: 1,
+                cursor: 'pointer',
+                display: 'block',
+                visibility: 'visible'
+              }}
             >
-              Load more &gt;
+              Learn More &gt;
             </button>
           </div>
         )}
